@@ -1,7 +1,7 @@
 # RISC-V-Hakaton
 * RISC-V
 1. https://github.com/MPSU/APS
-2. [https://github.com/MPSU/APS](https://github.com/ultraembedded/riscv)
+2. https://github.com/ultraembedded/riscv
 3. https://en.m.wikipedia.org/wiki/Hazard_(computer_architecture)#Register_forwarding
 * Verilog
 4. https://portal-ed.ru/index.php/uchebnik-verilog
