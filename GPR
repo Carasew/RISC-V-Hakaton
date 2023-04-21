@@ -1,0 +1,55 @@
+module miriscv_gpr (
+  // Clock, reset
+  input  logic                  clk_i,
+  input  logic                  arstn_i,
+
+  // Write port
+  input  logic                  wr_en_i,
+  input  logic [GPR_ADDR_W-1:0] wr_addr_i,
+  input  logic [XLEN-1:0]       wr_data_i,
+
+  // Read port 1
+  input  logic [GPR_ADDR_W-1:0] r1_addr_i,
+  output logic [XLEN-1:0]       r1_data_o,
+
+  // Read port 2
+  input  logic [GPR_ADDR_W-1:0] r2_addr_i,
+  output logic [XLEN-1:0]       r2_data_o
+  );
+
+  ////////////////////////
+  // Local declarations //
+  ////////////////////////
+
+  localparam NUM_WORDS = 2**GPR_ADDR_W;
+
+  logic [NUM_WORDS-1:0][XLEN-1:0] rf_reg;
+  logic [7:0]                     wr_en_dec;
+
+  ///////////////////////////////
+  // General purpose registers //
+  ///////////////////////////////
+
+  // Code to 1-hot convertation
+  always_comb begin : wr_en_decoder
+    wr_en_dec = 8'h00;
+    wr_en_dec[wr_addr_i] = wr_en_i;
+  end
+
+  // GPR write
+  always_ff @(posedge clk_i or negedge arstn_i) begin : register_write_behavioral
+    if (!arstn_i) begin
+      rf_reg <= '{default: 'b0};
+    end else begin
+      for (int i = 1; i < NUM_WORDS; i++) begin
+        if (wr_en_dec[i])
+          rf_reg[i] <= wr_data_i;
+      end
+    end
+  end
+
+  // GPR read
+  assign r1_data_o = rf_reg[r1_addr_i];
+  assign r2_data_o = rf_reg[r2_addr_i];
+
+endmodule: miriscv_gpr
